@@ -1,6 +1,4 @@
 
-use </home/irox/tmp/sub-model/hexagon_reinforced_panel_box.scad>;
-
 panelThickness = 2;
 panelHp=10;
 holeCount=4;
