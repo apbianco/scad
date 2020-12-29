@@ -1,3 +1,9 @@
+// Eurorack plate that supports 2 fuzz effect described here:
+// https://www.youtube.com/watch?v=CSTPOI6bUzI
+//
+// Measurements are straight out of data sheets (listed when available)
+// and adjusted using caliper measurments made by hand.
+
 { // Controling variables for the eurorack plate:
   // - The thicknet of the panel: 2 or above
   panel_thickness = 2;
@@ -10,7 +16,6 @@
   // - Set to true to create walls to improve rigidity
   walls = true;
   wall_size = 5;
-//
 }
 
 { // Derived constants and defined constants
@@ -131,6 +136,7 @@ module eurorackMountHole(hw) {
 }
 
 module 3dot5mm_plug(x, y, drawVolume) {
+  // From https://docs.rs-online.com/8a00/0900766b8158190a.pdf
   hole_diameter = 6;
   nut_diameter = 8;
   translate([x, y, -1]) {
@@ -146,6 +152,7 @@ module 3dot5mm_plug(x, y, drawVolume) {
 }
 
 module 3dot5mm_box(x, y) {
+  // https://docs.rs-online.com/8a00/0900766b8158190a.pdf
   translate([x - 5, y - 5.6, 2]) {
     color([0.3, 0.1, 0.1], 0.5) {
       cube([9, 10.5, 9]);
@@ -160,6 +167,7 @@ module 3dot5mm_box(x, y) {
 
 
 module potentiometer(x, y, drawVolume) {
+  // https://docs.rs-online.com/1db0/0900766b813604b9.pdf
   hole_diameter = 6.25;
   nut_diameter = 8;
   translate([x, y, -1]) {
