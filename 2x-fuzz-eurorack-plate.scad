@@ -137,15 +137,15 @@ module eurorackMountHole(hw) {
 
 module 3dot5mm_plug(x, y, drawVolume) {
   // From https://docs.rs-online.com/8a00/0900766b8158190a.pdf
-  hole_diameter = 6;
-  nut_diameter = 8;
+  hole_diameter = 7;
+  nut_diameter = 9;
   translate([x, y, -1]) {
     cylinder(d=hole_diameter, h=panel_thickness+1.5);
   }
   if (drawVolume) {
     translate([x, y, -0.3]) {
       color([0.4,0.5,0.5]) {
-        cylinder(d=8, h=0.5);
+        cylinder(d=nut_diameter, h=0.5);
       }
     }
   }
@@ -168,15 +168,15 @@ module 3dot5mm_box(x, y) {
 
 module potentiometer(x, y, drawVolume) {
   // https://docs.rs-online.com/1db0/0900766b813604b9.pdf
-  hole_diameter = 6.25;
-  nut_diameter = 8;
+  hole_diameter = 7;
+  nut_diameter = 14;
   translate([x, y, -1]) {
     cylinder(d=hole_diameter, h=panel_thickness+1.5);
   }
   if (drawVolume) {
     translate([x, y, -0.3]) {
       color([0.4,0.5,0.5]) {
-        cylinder(d=8, h=0.5);
+        cylinder(d=nut_diameter, h=0.5);
       }
     }
   }  
@@ -251,22 +251,24 @@ module fuzz_volume(y) {
 }
 
 
-
 { // Controling variables for this design
   
   // - Draw volumes
   draw_volume = true;
-  draw_text = true;
+  draw_text = false;
   wall_width = 2;
+  divider_groove = 1;
 }
 
 
 { // Design
+  middle = panel_height_/2 - 3*wall_width/2;
   difference() {
     eurorackPanel(panel_width_in_hp, number_of_holes, hole_width_);
     fuzz(20, draw_text, draw_volume);
-    translate([1, panel_height_/2 - 3*wall_width/2, 0]) {
-      cube([panel_width_-2, 0.5, 0.5]);
+    
+    translate([1, middle, 0]) {
+      cube([panel_width_-2, divider_groove, divider_groove]);
     }
     fuzz(10+(panel_height_/2), draw_text, draw_volume);
   }
@@ -283,7 +285,7 @@ module fuzz_volume(y) {
     translate([panel_width_ - wall_width,10,1]) {
       cube(size);
     }
-    translate([0, panel_height_/2 - 3*wall_width/2, 1]) {
+    translate([0, middle, 1]) {
       cube([panel_width_, wall_width, wall_size+15]);
     }
   }
