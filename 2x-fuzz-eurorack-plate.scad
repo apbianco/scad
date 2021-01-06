@@ -168,7 +168,7 @@ module 3dot5mm_box(x, y) {
 
 module potentiometer(x, y, drawVolume) {
   // https://docs.rs-online.com/1db0/0900766b813604b9.pdf
-  hole_diameter = 7;
+  hole_diameter = 10;
   nut_diameter = 14;
   translate([x, y, -1]) {
     cylinder(d=hole_diameter, h=panel_thickness+1.5);
@@ -254,7 +254,7 @@ module fuzz_volume(y) {
 { // Controling variables for this design
   
   // - Draw volumes
-  draw_volume = true;
+  draw_volume = false;
   draw_text = false;
   wall_width = 2;
   divider_groove = 1;
@@ -286,7 +286,7 @@ module fuzz_volume(y) {
       cube(size);
     }
     translate([0, middle, 1]) {
-      cube([panel_width_, wall_width, wall_size+15]);
+      cube([panel_width_, wall_width, wall_size+25]);
     }
   }
 }
