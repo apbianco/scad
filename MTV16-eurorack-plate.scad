@@ -198,86 +198,64 @@ module eurorackMountHole(hw) {
 module Board(x, y, tol=0.5, drawVolume=false) {
   // DIN specs:
   // eu.mouser.com/datasheet/2/46/Belden_06112018_MAB_5_SH-1370803.pdf
-  // DIN #1
   translate([x, y, -1]) {
-    cylinder(d=14, h=panelThickness+3);
+    // DIN #1  
+    // From the top of the board to the middle of the
+    // first DIN, there's ~23mm
+    translate([0, -23, 0]) {
+      cylinder(d=14, h=panelThickness+3);
+    }
+    // DIN #2
+    translate([0, -23 - 21.2 - tol, 0]) {
+      cylinder(d=14, h=panelThickness+3);
+    }
+    // Operating LED
+    translate([0, -23 - 21.2 - tol - 21.5, 0]) {
+      cylinder(d=3, h=panelThickness+3);
+    }
   }
-  // DIN #2
-  translate([x, y - 21.2 + tol, -1]) {
-    cylinder(d=14, h=panelThickness+3);
-  }
-  // Operating LED
-  translate([x, y - 21.2 - tol - 15, -1]) {
-    cylinder(d=3, h=panelThickness+3);
-  }
-
   // Contour
   if (drawVolume) {
-    translate([x-14, y-47, -0.3]) {
+    translate([x-7-5.5, y-77.5, -0.3]) {
       color([0.3, 0.1, 0.1]) {
-       cube([24, 58, 0.5]);
+	cube([14+5.5+4.5, 77.5, 0.5]);
       }
     }
   }
 }
 
-module fuzzBoard(x, y, drawVolume=false) {
-  translate([x, y, -1]) {
-    cylinder(d=7, h=panelThickness+3);
-  }
-  3dot5mm_plug(x+6, y-21.2, drawVolume);
-  3dot5mm_plug(x+6-1.5*3dot5mm_row_x_offset, y-21.2, drawVolume);
-}
-
 module Board2(x, y, drawVolume=false) {
   if (drawVolume) {
-    translate([x+9, y-47, 2]) {
+    translate([x+7+5.5, y-77.5, 2]) {
       color([0.3, 0.1, 0.1], 0.25) {
-        cube([1, 58, 67]);
+        cube([1.66, 77.5, 67]);
       }
     }
   }
 }
 
 module MountingBracket(x, y) {
- difference() {
-    // L shaped bracket
-    translate([x+10, y-47, 0]) {
-      cube([2, 18, 40]);
-    }
-    translate([x+9, y-40, 5]) {
-      cube([4, 20, 50]);
-    } 
-    // First mounting hole
-    translate([x+9, y-45, 4]) {
-      rotate([0,90,0]) {
-        cylinder(d=2, h=4);
-      }
-    }
-    // Second mounting hole
-    translate([x+9, y-45, 10.5]) {
-      rotate([0,90,0]) {
-        cylinder(d=2, h=4);
-      }
-    }   
-    // Third mounting hole
-    translate([x+9, y-45, 18]) {
-      rotate([0,90,0]) {
-        cylinder(d=2, h=4);
-      }
-    }      
+  x_offset = 7 + 5.5 + 1.66;
+  // Hole #1: support to be drilled with a hole
+  translate([x+x_offset, y-77.5, 0]) {
+    cube([11.24, 6.5, 12]);
   }
-  // Support leg
-  translate([x+12, y-40.5, 2]) {
-    rotate([90,0,0]) {
-      Right_Angled_Triangle(a=30, b=10, height=2);
-    }
-  }  
+  translate([x+x_offset-1.67-5, y-77.5, 0]) {
+    cube([5, 6.5, 12]);
+  }
+  // Support for the hole #2
+  translate([x+x_offset+1, y-20, 0]) {
+    cube([10.24, 20, 23]);
+  }
+  // Botton guide for second support
+  translate([x+x_offset, y-10, 0]) {
+    cube([10, 10, 6]);
+  }
 }
 
 module 3dot5mm_plug(x, y, drawVolume=false) {
   translate([x, y, -1]) {
-    cylinder(d=6, h=panelThickness+3);
+    cylinder(d=6.5, h=panelThickness+3);
   }
   if (drawVolume) {
     translate([x, y, -0.3]) {
@@ -288,7 +266,7 @@ module 3dot5mm_plug(x, y, drawVolume=false) {
   }
 }
 
-module 3to5mm_box(x, y) {
+module 3dot5mm_box(x, y) {
   translate([x - 5, y - 5.6, 2]) {
     color([0.3, 0.1, 0.1], 0.5) {
       cube([9, 10.5, 9]);
@@ -301,70 +279,84 @@ module 3to5mm_box(x, y) {
   }
 }
 
-drawVolume = false;  // Draw the volumes
-fitFuzz = false;      // Fit a fuzz
-3dot5mm_spacing_x = 11.5;
-3dot5mm_spacing_y = 11.5;
-3dot5mm_row_x_offset = 7.75;
-3dot5mm_row_y_offset = 15;
+{ // Part paramaters
+  // Draw the volumes - set to false to print.
+  drawVolume = false;
 
-// Where the first MIDI din will appear. This change if the fuzz
-// is added to the plate
+  // Set to true to view a projection.
+  project = false;
+  project_z = 4;
+  
+  // 3.5mm jack spacings
+  3dot5mm_spacing_x = 11.5;
+  3dot5mm_spacing_y = 11.5;
+  // 3.5mm main row, first jack location
+  3dot5mm_row_x_offset = 7.75;
+  3dot5mm_row_y_offset = 13;
 
-fuzz_offset = 10;
+  // 3.5mm second row, first jack location
+  3dot5mm_row2_x_offset = 3dot5mm_row_x_offset;
+  3dot5mm_row2_y_offset = 47.5;
 
-din_x_offset = 25.4; // - fuzz_offset;
-din_y_offset = 110;
-
-fuzz_x_offset = din_x_offset + 22;
-fuzz_y_offset = din_y_offset;
-
-difference () {
-  eurorackPanel(panelHp, holeCount, holeWidth);
-  Board(din_x_offset, din_y_offset, drawVolume=drawVolume);
-  for(j = [0:3]) {
-    for(i = [0:3]) {
-      3dot5mm_plug(3dot5mm_row_x_offset + i*3dot5mm_spacing_x,
-                   3dot5mm_row_y_offset + j*3dot5mm_spacing_y,
-                   drawVolume);
-    }
-  }
-  if (fitFuzz) {
-    fuzzBoard(fuzz_x_offset, fuzz_y_offset, drawVolume=drawVolume);
-  }
+  // Location of the two DIN connectors
+  din_x_offset = 25.4;
+  din_y_offset = 121;
 }
 
-Board2(din_x_offset, din_y_offset, drawVolume=drawVolume);
-MountingBracket(din_x_offset, din_y_offset);
-
-// Volume occupied by the 3.5mm jack mounts
-if (drawVolume) {
-  for(j = [0:3]) {
-    for(i = [0:3]) {
-      if (drawVolume) {
-        3to5mm_box(3dot5mm_row_x_offset + i*3dot5mm_spacing_x,
-                  3dot5mm_row_y_offset + j*3dot5mm_spacing_y);
+module MTV16_Board() {
+  difference () {
+    eurorackPanel(panelHp, holeCount, holeWidth);
+    Board(din_x_offset, din_y_offset, drawVolume=drawVolume);
+    for(j = [0:2]) {
+      for(i = [0:3]) {
+	3dot5mm_plug(3dot5mm_row_x_offset + i*3dot5mm_spacing_x,
+		     3dot5mm_row_y_offset + j*3dot5mm_spacing_y,
+		     drawVolume);
       }
     }
+    for(j = [0:3]) {
+      3dot5mm_plug(3dot5mm_row2_x_offset,
+		   3dot5mm_row2_y_offset + j*3dot5mm_spacing_y,
+		   drawVolume);
+    }
   }
-  if (fitFuzz) {
-    3to5mm_box(fuzz_x_offset + 6, fuzz_y_offset-21.2);
-    3to5mm_box(fuzz_x_offset + 6 - 1.5*3dot5mm_row_x_offset,
-               fuzz_y_offset-21.2);
+
+  Board2(din_x_offset, din_y_offset, drawVolume=drawVolume);
+  MountingBracket(din_x_offset, din_y_offset);
+
+  // Volume occupied by the 3.5mm jack mounts
+  if (drawVolume) {
+    for(j = [0:2]) {
+      for(i = [0:3]) {
+	3dot5mm_box(3dot5mm_row_x_offset + i*3dot5mm_spacing_x,
+		    3dot5mm_row_y_offset + j*3dot5mm_spacing_y);
+      }
+    }
+    for(j = [0:3]) {
+      3dot5mm_box(3dot5mm_row2_x_offset,
+		  3dot5mm_row2_y_offset + j*3dot5mm_spacing_y);
+    }
+  }
+
+  if (walls) {
+    size = [2,panelOuterHeight-20,wall_size];
+    translate([0,10,1]){
+      cube(size);
+    }
+    translate([panelWidth-2,10,1]) {
+      cube(size);
+    }
   }
 }
 
-if (walls) {
-  size = [2,panelOuterHeight-20,wall_size];
-  translate([0,10,1]){
-    cube(size);
+if (project) {
+  projection(cut=true) {
+    translate([0, 0, -project_z]) {
+      MTV16_Board();
+    }
   }
-  translate([panelWidth-2,10,1]) {
-    cube(size);
-  }
-  translate([0, 56, 1]) {
-    cube([panelWidth, 2, wall_size]);
-  }
+} else {
+  MTV16_Board();
 }
 
 
