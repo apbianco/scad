@@ -2,8 +2,9 @@
 // the device off - the on/off switch is inaccessible.
 
 { // Part parameter
+
   // - Overall dimentions of the plate
-  plate_length = 84 - 2.60;
+  plate_length = 84 - 2.60 - 2.47;
   plate_width = 20;
   plate_thickness = 3;
   
@@ -25,6 +26,10 @@
   antenna_hole_x_offset = screw_hole_x_offset + 61.5;
   antenna_hole_diameter = 8;
   antenna_enclosure = true;
+  
+  // Project instead of rendering
+  project = false;
+  project_z = plate_thickness + 1;
   
   $fn = 200;
 }
@@ -54,9 +59,9 @@ module db9enclosure(x, y) {
   translate([x, y, 0]) {
     rotate([0,0,90]) { 
       difference() {
-        dsub(1.3, 17.04, 9.5);
+        dsub(1.25, 17.04, 9.5);
         translate([0.2, 0, -1]) {
-          dsub(1.1, 17.04, 12.5);
+          dsub(1.05, 17.04, 12.5);
         }
       }
     }
@@ -114,8 +119,8 @@ module plate() {
   if (antenna_enclosure) {
     translate([antenna_hole_x_offset, screw_hole_y_offset, 0]) {
       difference() {
-	cylinder(d=antenna_hole_diameter+4, h=10);
-	cylinder(d=antenna_hole_diameter+0.5, h=10);
+	cylinder(d=antenna_hole_diameter+3, h=10);
+	cylinder(d=antenna_hole_diameter, h=10);
       }
     }
   }
@@ -157,4 +162,12 @@ module plate() {
   }
 }
 
-plate();
+if (project) {
+  projection(cut=true) {
+    translate([0, 0, -project_z]) {
+      plate();
+    }
+  }
+} else {
+  plate();
+}
