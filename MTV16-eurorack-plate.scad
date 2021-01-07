@@ -1,3 +1,7 @@
+// Print logs:
+//
+// Eryone black, 215C Z offset -1.86 or so
+
 panelThickness = 2;
 panelHp = 10;
 holeCount = 4;
@@ -27,83 +31,6 @@ echo(offsetToMountHoleCenterX);
 echo("Pannel width: ", panelWidth);
 
 $fn=200;
-
-/*
-Triangles.scad
- Author: Tim Koopman
- https://github.com/tkoopman/Delta-Diamond/blob/master/OpenSCAD/Triangles.scad
-
-         angleCA
-           /|\
-        a / H \ c
-         /  |  \
- angleAB ------- angleBC
-            b
-
-Standard Parameters
-	center: true/false
-		If true same as centerXYZ = [true, true, true]
-
-	centerXYZ: Vector of 3 true/false values [CenterX, CenterY, CenterZ]
-		center must be left undef
-
-	height: The 3D height of the Triangle. Ignored if heights defined
-
-	heights: Vector of 3 height values heights @ [angleAB, angleBC, angleCA]
-		If CenterZ is true each height will be centered individually, this means
-		the shape will be different depending on CenterZ. Most times you will want
-		CenterZ to be true to get the shape most people want.
-*/
-
-/* 
-Triangle
-	a: Length of side a
-	b: Length of side b
-	angle: angle at point angleAB
-*/
-module Triangle(
-			a, b, angle, height=1, heights=undef,
-			center=undef, centerXYZ=[false,false,false])
-{
-	// Calculate Heights at each point
-	heightAB = ((heights==undef) ? height : heights[0])/2;
-	heightBC = ((heights==undef) ? height : heights[1])/2;
-	heightCA = ((heights==undef) ? height : heights[2])/2;
-	centerZ = (center || (center==undef && centerXYZ[2]))?0:max(heightAB,heightBC,heightCA);
-
-	// Calculate Offsets for centering
-	offsetX = (center || (center==undef && centerXYZ[0]))?((cos(angle)*a)+b)/3:0;
-	offsetY = (center || (center==undef && centerXYZ[1]))?(sin(angle)*a)/3:0;
-	
-	pointAB1 = [-offsetX,-offsetY, centerZ-heightAB];
-	pointAB2 = [-offsetX,-offsetY, centerZ+heightAB];
-	pointBC1 = [b-offsetX,-offsetY, centerZ-heightBC];
-	pointBC2 = [b-offsetX,-offsetY, centerZ+heightBC];
-	pointCA1 = [(cos(angle)*a)-offsetX,(sin(angle)*a)-offsetY, centerZ-heightCA];
-	pointCA2 = [(cos(angle)*a)-offsetX,(sin(angle)*a)-offsetY, centerZ+heightCA];
-
-	polyhedron(
-		points=[	pointAB1, pointBC1, pointCA1,
-					pointAB2, pointBC2, pointCA2 ],
-		triangles=[	
-			[0, 1, 2],
-			[3, 5, 4],
-			[0, 3, 1],
-			[1, 3, 4],
-			[1, 4, 2],
-			[2, 4, 5],
-			[2, 5, 0],
-			[0, 5, 3] ] );
-}
-
-module Right_Angled_Triangle(
-			a, b, height=1, heights=undef,
-			center=undef, centerXYZ=[false, false, false])
-{
-	Triangle(a=a, b=b, angle=90, height=height, heights=heights,
-				   center=center, centerXYZ=centerXYZ);
-}
-
 
 module eurorackPanel(panelHp,
                      mountHoles=2,
@@ -237,11 +164,11 @@ module Board2(x, y, drawVolume=false) {
 module MountingBracket(x, y) {
   x_offset = 7 + 5.5 + 1.66;
   // Hole #1: support to be drilled with a hole
-  translate([x+x_offset, y-77.5, 0]) {
-    cube([11.24, 6.5, 12]);
+  translate([x+x_offset, y-77.5, 2]) {
+    cube([11.24, 6.5, 10]);
   }
-  translate([x+x_offset-1.67-5, y-77.5, 0]) {
-    cube([5, 6.5, 12]);
+  translate([x+x_offset-1.67-5, y-77.5, 2]) {
+    cube([5, 6.5, 10]);
   }
   // Support for the hole #2
   translate([x+x_offset+1, y-20, 0]) {
@@ -319,6 +246,14 @@ module MTV16_Board() {
 		   3dot5mm_row2_y_offset + j*3dot5mm_spacing_y,
 		   drawVolume);
     }
+    translate([3dot5mm_row_x_offset + 3*3dot5mm_spacing_x - 1.5,
+               3dot5mm_row_y_offset + 2.5*3dot5mm_spacing_y, 1]) {
+      rotate([0, 180, 0]) {
+	linear_extrude(height=1, convexity=5) {
+	  text("1►", size=4, halign="center", font="Impact");
+	}
+      }
+    }
   }
 
   Board2(din_x_offset, din_y_offset, drawVolume=drawVolume);
@@ -358,5 +293,3 @@ if (project) {
 } else {
   MTV16_Board();
 }
-
-
