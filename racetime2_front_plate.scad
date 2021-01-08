@@ -1,33 +1,28 @@
-// Protection plate for Racetime2. Prevents one from accidentally turning
-// the device off - the on/off switch is inaccessible.
+// Protection plate for the Racetime2. Prevents one from accidentally
+// turning the device off by making the on/off switch is inaccessible.
+//
+// Print logs:
+// - 1/7: Eyone black, default 205C, part OK
+// - 1/8: Eyone black, 200C, part really nice
 
 { // Part parameter
-
   // - Overall dimentions of the plate
-  plate_length = 84 - 2.60 - 2.47;
+  plate_length = 79;
   plate_width = 20;
   plate_thickness = 3;
-  
-  screw_holes = false;
-  db9_enclosure = true;
-  
-  // Walls
+  // - Walls
   wall_thickness = 2;
   wall_height = 5;
-  
-  // Screw hole dimentions
-  screw_hole_diameter = 4;
-  screw_hole_height = 5;
-  screw_hole_x_offset = 7.5;
-  screw_hole_y_offset = (plate_width / 2);
-  screw_hole_guide_diameter = screw_hole_diameter + 2;
-
-  // Antenna hole dimentions
-  antenna_hole_x_offset = screw_hole_x_offset + 61.5;
-  antenna_hole_diameter = 8;
+  // - Antenna enclosure position and dimensions
   antenna_enclosure = true;
-  
-  // Project instead of rendering
+  antenna_hole_x_offset = 69;
+  antenna_hole_y_offset = (plate_width / 2);
+  antenna_hole_diameter = 8;
+  // - DB9
+  db9_enclosure = true;
+  db9_x_offset = 18;
+  db9_y_offset = (plate_width/2)-2.045;
+  // - Project instead of rendering
   project = false;
   project_z = plate_thickness + 1;
   
@@ -35,6 +30,7 @@
 }
 
 module db9enclosure(x, y) {
+  // One DB9 block
   module dsub(sc,sz,dp){
     cs=(sz/2)-2.6;
     cs2=(sz/2)-4.095;
@@ -56,6 +52,8 @@ module db9enclosure(x, y) {
       }
     }
   }
+  // Two DB9 blocks of slightly different sizes extruted to create an
+  // enclosure.
   translate([x, y, 0]) {
     rotate([0,0,90]) { 
       difference() {
@@ -68,7 +66,6 @@ module db9enclosure(x, y) {
   }
 }
 
-
 module plate() {
   difference () {
     // Main plate
@@ -77,33 +74,9 @@ module plate() {
         cube([plate_length - wall_thickness,
               plate_width - wall_thickness, plate_thickness]);
       }
-      if (screw_holes) {
-        translate([screw_hole_x_offset, screw_hole_y_offset, 0]) {
-          cylinder(d=screw_hole_guide_diameter, h=screw_hole_height);
-        }
-        translate([screw_hole_x_offset+25, screw_hole_y_offset, 0]) {
-          cylinder(d=screw_hole_guide_diameter, h=screw_hole_height);
-        }
-      }
     }
-    if (screw_holes) {
-      // First screw hole
-      translate([screw_hole_x_offset, screw_hole_y_offset, -1]) {
-        cylinder(d=screw_hole_diameter, h=screw_hole_height+1);
-      }
-      // Second screw hole
-      translate([screw_hole_x_offset + 25, screw_hole_y_offset, -1]) {
-        cylinder(d=screw_hole_diameter, h=screw_hole_height+1);
-      }
-    }
-    // Antenna hole
-    if (! antenna_enclosure) {
-      translate([antenna_hole_x_offset, screw_hole_y_offset, -1]) {
-	cylinder(d=antenna_hole_diameter, h=wall_height+1);
-      }
-    }
-    // Logo
-    translate([48, screw_hole_y_offset+6, 2]) {
+    // SCA logo
+    translate([48, antenna_hole_y_offset+6, 2]) {
       rotate([180, 0, 0]) {
         linear_extrude(height=3, convexity=5) {
           text("SCA", size=11, halign="center", font="Impact");
@@ -117,7 +90,7 @@ module plate() {
   }
 
   if (antenna_enclosure) {
-    translate([antenna_hole_x_offset, screw_hole_y_offset, 0]) {
+    translate([antenna_hole_x_offset, antenna_hole_y_offset, 0]) {
       difference() {
 	cylinder(d=antenna_hole_diameter+3, h=10);
 	cylinder(d=antenna_hole_diameter, h=10);
@@ -126,9 +99,10 @@ module plate() {
   }
 
   if (db9_enclosure) {
-    db9enclosure(18, plate_width/2-(2.5-0.455));
+    db9enclosure(db9_x_offset, db9_y_offset);
   }
 
+  // Rounded exterior walls.
   union() {
     translate([wall_thickness/2, 0, 0]) {
       cube([plate_length - wall_thickness, wall_thickness, 
