@@ -3,3 +3,4 @@
 *.gcode
 *.stl
 *.dxf
+scad-mode.el
