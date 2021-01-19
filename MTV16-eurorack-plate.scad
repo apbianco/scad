@@ -1,6 +1,12 @@
 // Print logs:
 //
-// - 1/7: Eryone black, 215C Z offset -1.86 or so.
+// - 1/7:  Eryone black, 215C Z offset -1.86 or so.
+// - 1/8:  Eryone black, 210C Z offset -1.86 or so. Really stuck to the plate,
+//         Needs a bit of a positive X offset (1 or 2 mm.)
+// - 1/16: Eryone black, 210C (after fixing the thermistor - 210 might be too
+//         high - severe warping but otherwise good. Lower support requires
+//         using a small-size screw, top bracket need to recess maybe 1mm.
+//         These adjustments haven't been do to this version.
 
 panelThickness = 2;
 panelHp = 10;
@@ -133,19 +139,19 @@ module Board(x, y, tol=0.5, drawVolume=false) {
       cylinder(d=14, h=panelThickness+3);
     }
     // DIN #2
-    translate([0, -23 - 21.2 - tol, 0]) {
+    translate([0, -44.2 - tol, 0]) {
       cylinder(d=14, h=panelThickness+3);
     }
     // Operating LED
-    translate([0, -23 - 21.2 - tol - 21.5, 0]) {
+    translate([0, -65.7 - tol, 0]) {
       cylinder(d=3, h=panelThickness+3);
     }
   }
   // Contour
   if (drawVolume) {
-    translate([x-7-5.5, y-77.5, -0.3]) {
+    translate([x-12.5, y-77.5, -0.3]) {
       color([0.3, 0.1, 0.1]) {
-	cube([14+5.5+4.5, 77.5, 0.5]);
+	cube([24, 77.5, 0.5]);
       }
     }
   }
@@ -153,7 +159,7 @@ module Board(x, y, tol=0.5, drawVolume=false) {
 
 module Board2(x, y, drawVolume=false) {
   if (drawVolume) {
-    translate([x+7+5.5-2.22, y-77.5, 2]) {
+    translate([x+10.28, y-77.5, 2]) {
       color([0.3, 0.1, 0.1], 0.25) {
         cube([1.66, 77.5, 67]);
       }
@@ -162,17 +168,17 @@ module Board2(x, y, drawVolume=false) {
 }
 
 module MountingBracket(x, y) {
-  x_offset = 7 + 5.5 + 1.66 - 2.22;
+  x_offset = 13.44
   // Hole #1: support to be drilled with a hole
   translate([x+x_offset, y-77.5, panelThickness]) {
-    cube([11.24+2.22, 6.5, 10]);
+    cube([11.96, 6.5, 10]);
   }
-  translate([x+x_offset-1.67-5, y-77.5, 2]) {
+  translate([x+x_offset-6.67, y-77.5, 2]) {
     cube([5, 6.5, 10]);
   }
   // Support for the hole #2
   translate([x+x_offset+1, y-20, panelThickness]) {
-    cube([10.24+2.22, 20, 30]);
+    cube([10.96, 20, 30]);
   }
   // Botton guide for second support
   translate([x+x_offset-0.4, y-10, panelThickness]) {
@@ -201,7 +207,7 @@ module 3dot5mm_box(x, y) {
   }
   translate([x - 3.8, y - 4.4, 11]) {
     color([0.3, 0.3, 0.1], 0.5) {
-      cube([3.8+0.9*2, 3.7+4.4, 5]);
+      cube([5.6, 8.1, 5]);
     }
   }
 }
@@ -241,14 +247,14 @@ module MTV16_Board() {
 		     drawVolume);
       }
     }
-    translate([din_x_offset+13, din_y_offset - 23 - 3, 1]) {
+    translate([din_x_offset+13, din_y_offset - 26, 1]) {
       rotate([0, 180, 0]) {
         linear_extrude(height=1, convexity=5) {
           text("►", size=6, halign="center", font="Impact");
 	}
       }
     }
-    translate([din_x_offset-13, din_y_offset - 23 -21.2 - 3, 1]) {
+    translate([din_x_offset-13, din_y_offset - 47.2, 1]) {
       rotate([0, 180, 0]) {
         linear_extrude(height=1, convexity=5) {
           text("►", size=6, halign="center", font="Impact");
