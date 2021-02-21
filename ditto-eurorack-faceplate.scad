@@ -5,8 +5,9 @@ holeCount=4;
 holeWidth = 5.08; //If you want wider holes for easier mounting. Otherwise set to any number lower than mountHoleDiameter. Can be passed in as parameter to eurorackPanel()
 
 
-threeUHeight = 133.35; //overall 3u height
-panelOuterHeight =128.5+0.5;
+heightFudgeFactor = 1;
+threeUHeight = 133.35 + heightFudgeFactor;     // 3U height
+panelOuterHeight = 128.5 + heightFudgeFactor;
 panelInnerHeight = 110; //rail clearance = ~11.675mm, top and bottom
 railHeight = (threeUHeight-panelOuterHeight)/2;
 mountSurfaceHeight = (panelOuterHeight-panelInnerHeight-railHeight*2)/2;
@@ -165,166 +166,87 @@ module slot(d,l,t=4) {
 
 
 module alex_rack2() {
+  fp_button1_d = 11.5; //8;
+  fp_button1_slot_l = 5;
+  fp_y = 50;   // controls board "y"
+  led_d = 4;
+  led_slot_l = 0;
+  led_slot_y = fp_y+25.25;
+  nob1_d = 7;
+  nob1_slot_l = 5;
+  nob1_y = fp_y+58.9;
     
-    //board spec
-    fp_button1_d = 11.5; //8;
-    fp_button1_slot_l = 5;
-    fp_y = 50;   // controls board "y"
-    led_d = 4;
-    led_slot_l = 0;
-    led_slot_y = fp_y+25.25;
-    nob1_d = 7;
-    nob1_slot_l = 5;
-    nob1_y = fp_y+58.9;
+  // plug spec
+  plug_y_offset = 15;
+  3dot5mm_plug1_d = 6.5;  // M6 thread
+  3dot5mm_y = 12.25;
+  6dot35mm_plug1_d = 11.5; // 9.525;  // 3/8 inich
+  6dot35mm_y = 3dot5mm_y + plug_y_offset;
     
-    // plug spec
-    plug_y_offset = 15;
-    3dot5mm_plug1_d = 6.5;  // M6 thread
-    3dot5mm_y = 12.25;
-    6dot35mm_plug1_d = 11.5; // 9.525;  // 3/8 inich
-    6dot35mm_y = 3dot5mm_y + plug_y_offset;
+  // re-enforcement structure
+  re_d = 3;
+  re_l = 110;
+  re_y_offset= 10;
+  re_x_offset= 2;
+  cover_w = 50.8;
     
-    // re-enforcement structure
-    re_d = 3;
-    re_l = 110;
-    re_y_offset= 10;
-    re_x_offset= 2;
-    cover_w = 50.8;
-    
-    t = 2.5;
-    face_t = 2.5;
-    group() {
-        difference() {
-            group() {
-                eurorackPanel(panelHp, holeCount,holeWidth);
-                
-                // testing component placement
-             /*   translate([12.5,6dot35mm_y,0]) cylinder(d=20, h=10);
-                translate([12.5+25,6dot35mm_y,0]) cylinder(d=20, h=10);
-                translate([1, fp_y - fp_button1_d/2-18,0]) cube([48,93,6]);*/
-                
-                // re-enforcement structure
-                translate([re_x_offset,re_y_offset,2]) rotate([-90,0,0]) cylinder(d=re_d, h =re_l);
-                translate([cover_w-re_x_offset,re_y_offset,2]) rotate([-90,0,0]) cylinder(d=re_d, h =re_l);
-                translate([re_x_offset,fp_y-5,0]) cube([50-re_x_offset*2,10,t]);
-                
-                group() {
-                    // LED hole
-              //      translate([25,led_slot_y,0]) slot(led_d+t*2,led_slot_l, t=t);
-                    
-                    // nob 1
-                 //   translate([25,110,0]) slot(nob1_d+t*2, nob1_slot_l, t=t);
-                    
-                    // foot pedel button 1
-                    translate([25,fp_y,0]) slot(fp_button1_d+t*2, fp_button1_slot_l, t=t);
-            
-                    // 1/4" input 
-                //    translate([12.5,6dot35mm_y,0]) cylinder(d=6dot35mm_plug1_d+t*2, h=face_t);
-                  //  translate([12.5+25,6dot35mm_y,0]) cylinder(d=6dot35mm_plug1_d+t*2, h=face_t);
-                    //input/output plug
-                //    translate([12.5,3dot5mm_y,0]) cylinder(d=3dot5mm_plug1_d+t*2, h=face_t);
-                 //   translate([12.5+25,3dot5mm_y,0]) cylinder(d=3dot5mm_plug1_d+t*2, h=face_t);
-                }
-                
-            }
-            
-            // board thruhulls
-                group() {
-                // LED hole
-                translate([25,led_slot_y,0]) slot(led_d,led_slot_l);
-                
-                // nob 1
-                translate([25,nob1_y,0]) slot(nob1_d, nob1_slot_l);
-                
-                // foot pedel button 1
-                translate([25,fp_y,0]) slot(fp_button1_d, fp_button1_slot_l);
-            }
-            
-            // 1/4" input 
-            translate([12.5,6dot35mm_y,0]) cylinder(d=6dot35mm_plug1_d, h=10);
-            translate([12.5+25,6dot35mm_y,0]) cylinder(d=6dot35mm_plug1_d, h=10);
-            //input/output plug
-            translate([12.5,3dot5mm_y,0]) cylinder(d=3dot5mm_plug1_d, h=10);
-            translate([12.5+25,3dot5mm_y,0]) cylinder(d=3dot5mm_plug1_d, h=10);
+  t = 2.5;
+  face_t = 2.5;
+  group() {
+    difference() {
+      group() {
+        eurorackPanel(panelHp, holeCount,holeWidth);
+        // re-enforcement structure
+        translate([re_x_offset,re_y_offset,2]) {
+          rotate([-90,0,0]) cylinder(d=re_d, h =re_l);
         }
-    }
-}
-module alex_rack3() {
-    h = 50;
-    w = 205;
-    hex_wall_t=1.5; hex_wall_h=1; hex_d=8;
-    hex_h=hex_d;
-    hex_w=hex_d;
-    h_row = 2;//h/(hex_w+hex_wall_t)*3+1;
-    w_row = w/(hex_w+hex_wall_t)+3;
-    
-    led_d = 4;
-    led_slot_l = 10;
-    led_slot_y = 85;
-    
-    t=2;
-    face_t = 2;
-    nob1_d = 7;
-    nob1_slot_l = 20;
-    fp_button1_d = 8;
-    fp_button1_slot_l = 15;
-    3dot5mm_plug1_d = 6;  // M6 thread
-    3dot5mm_y = 20;
-    6dot35mm_plug1_d = 9.525;  // 3/8 inich
-    6dot35mm_y = 35;
-    
-    group() {
-        difference() {
-            group() {
-                difference() {
-                    eurorackPanel(panelHp, holeCount,holeWidth);
-                    translate([9,12,0]) hexagon_array(h_row,w_row,hex_wall_t,hex_wall_h*2, hex_h, hex_w);
-                }
-                
-                group() {
-                    // LED hole
-                    translate([25,led_slot_y,0]) slot(led_d+t*2,led_slot_l, t=t);
-                    
-                    // nob 1
-                    translate([25,110,0]) slot(nob1_d+t*2, nob1_slot_l, t=t);
-                    
-                    // foot pedel button 1
-                    translate([25,60,0]) slot(fp_button1_d+t*2, fp_button1_slot_l, t=t);
-            
-                    // 1/4" input 
-                    translate([12.5,6dot35mm_y,0]) cylinder(d=6dot35mm_plug1_d+t*2, h=face_t);
-                    translate([12.5+25,6dot35mm_y,0]) cylinder(d=6dot35mm_plug1_d+t*2, h=face_t);
-                    //input/output plug
-                    translate([12.5,3dot5mm_y,0]) cylinder(d=3dot5mm_plug1_d+t*2, h=face_t);
-                    translate([12.5+25,3dot5mm_y,0]) cylinder(d=3dot5mm_plug1_d+t*2, h=face_t);
-                }
-            }
-            
-            // board thruhulls
-                group() {
-                // LED hole
-                translate([25,led_slot_y,0]) slot(led_d,led_slot_l);
-                
-                // nob 1
-                translate([25,110,0]) slot(nob1_d, nob1_slot_l);
-                
-                // foot pedel button 1
-                translate([25,60,0]) slot(fp_button1_d, fp_button1_slot_l);
-            }
-            
-            // 1/4" input 
-            translate([12.5,6dot35mm_y,0]) cylinder(d=6dot35mm_plug1_d, h=10);
-            translate([12.5+25,6dot35mm_y,0]) cylinder(d=6dot35mm_plug1_d, h=10);
-            //input/output plug
-            translate([12.5,3dot5mm_y,0]) cylinder(d=3dot5mm_plug1_d, h=10);
-            translate([12.5+25,3dot5mm_y,0]) cylinder(d=3dot5mm_plug1_d, h=10);
+        translate([cover_w-re_x_offset,re_y_offset,2]) {
+          rotate([-90,0,0]) cylinder(d=re_d, h =re_l);
         }
+        translate([re_x_offset,fp_y-5,0]) {
+          cube([50-re_x_offset*2,10,t]);
+        }
+        group() {
+          // LED hole
+          // foot pedel button 1
+          translate([25,fp_y,0]) {
+            slot(fp_button1_d+t*2, fp_button1_slot_l, t=t);
+            // 1/4" input
+	  }
+        }
+      }
+      // board thruhulls
+      group() {
+        // LED hole
+        translate([25,led_slot_y,0]) {
+	  slot(led_d,led_slot_l);
+        }      
+        // nob 1
+        translate([25,nob1_y,0]) {
+	  slot(nob1_d, nob1_slot_l);
+        }
+        // foot pedel button 1
+        translate([25,fp_y,0]) {
+	  slot(fp_button1_d, fp_button1_slot_l);
+        }
+      }            
+      // 1/4" input 
+      translate([12.5,6dot35mm_y,0]) {
+        cylinder(d=6dot35mm_plug1_d, h=10);
+      }
+      translate([12.5+25,6dot35mm_y,0]) {
+        cylinder(d=6dot35mm_plug1_d, h=10);
+      }
+      //input/output plug
+      translate([12.5,3dot5mm_y,0]) {
+        cylinder(d=3dot5mm_plug1_d, h=10);
+      }
+      translate([12.5+25,3dot5mm_y,0]) {
+        cylinder(d=3dot5mm_plug1_d, h=10);
+      }
     }
+  }
 }
 
 $fn=60;
-//Samples
-//eurorackPanel(4, 2,holeWidth);
-//eurorackPanel(panelHp, holeCount,holeWidth);
 alex_rack2();
-//eurorackPanel(60, 8,holeWidth);
