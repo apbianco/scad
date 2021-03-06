@@ -4,3 +4,4 @@
 *.stl
 *.dxf
 scad-mode.el
+*.scad~
