@@ -190,19 +190,18 @@ module alex_rack2() {
   re_x_offset= 2;
   cover_w = 50.8;
     
-  t = 2.5;
-  face_t = 2.5;
+  t = 3;
+  face_t = 3;
   group() {
+    translate([re_x_offset,re_y_offset,2]) {
+      cube([2, 110, 3]);
+    }
+    translate([cover_w-re_x_offset-2,re_y_offset,2]) {
+      cube([2, 110, 3]);
+    }
     difference() {
       group() {
         eurorackPanel(panelHp, holeCount,holeWidth);
-        // re-enforcement structure
-        translate([re_x_offset,re_y_offset,2]) {
-          rotate([-90,0,0]) cylinder(d=re_d, h =re_l);
-        }
-        translate([cover_w-re_x_offset,re_y_offset,2]) {
-          rotate([-90,0,0]) cylinder(d=re_d, h =re_l);
-        }
         translate([re_x_offset,fp_y-5,0]) {
           cube([50-re_x_offset*2,10,t]);
         }
