@@ -3,12 +3,14 @@
   height_z = 100;
   width_x = 51;
   depth_y = 42;
+  // The part extends on the back (width_x x depth_y is the base of the
+  // device)
   depth_negative_offset_y = 2;
-  $fn = 200;
 
-  bottom_plate_height_z = 1; // 3
+  bottom_plate_height_z = 1;
   side_plate_width = 3;
 
+  // This is the width of the from wall
   return_wall_width_x = 5.25;
 
   banana_diameter = 10.75;
@@ -19,7 +21,7 @@
   black_banana_x = width_x/2;
   black_banana_y = 27.5 + (banana_diameter/2);
 
-  project = true;
+  $fn = 200;
 }
 
 module bottom_plate() {
@@ -118,7 +120,7 @@ module back_wall() {
   }
 }
 
-module piece() {
+module main_piece() {
   bottom_plate();
   side_plate_grooved();
   front_plate();
@@ -130,18 +132,19 @@ module piece() {
 
 module part() {
   difference() {
-    piece();
+    main_piece();
+    // Four grooves for straps to be passed through.
     translate([-side_plate_width, -depth_negative_offset_y, 15]) {
-      cube([side_plate_width, depth_negative_offset_y, 20]);
+      cube([side_plate_width, depth_negative_offset_y, 22]);
     }
-    translate([-side_plate_width, -depth_negative_offset_y, 70]) {
-      cube([side_plate_width, depth_negative_offset_y, 20]);
+    translate([-side_plate_width, -depth_negative_offset_y, 55]) {
+      cube([side_plate_width, depth_negative_offset_y, 22]);
     }
     translate([width_x, -depth_negative_offset_y, 15]) {
-      cube([side_plate_width, depth_negative_offset_y, 20]);
+      cube([side_plate_width, depth_negative_offset_y, 22]);
     }
-    translate([width_x, -depth_negative_offset_y, 70]) {
-      cube([side_plate_width, depth_negative_offset_y, 20]);
+    translate([width_x, -depth_negative_offset_y, 55]) {
+      cube([side_plate_width, depth_negative_offset_y, 22]);
     }
   }
 }
