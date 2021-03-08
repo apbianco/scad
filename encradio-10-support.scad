@@ -21,6 +21,13 @@
   black_banana_x = width_x/2;
   black_banana_y = 27.5 + (banana_diameter/2);
 
+  strap_1_z = 15;
+  strap_2_z = 55;
+  strap_height_z = 22;
+  strap_width_y = depth_negative_offset_y + 1;
+
+  start_stop = "Stop";
+
   $fn = 200;
 }
 
@@ -84,9 +91,29 @@ module side_plate_not_grooved() {
   side_plate_width_x = side_plate_width;
   side_plate_depth_y = side_plate_width + depth_y + side_plate_width;
   side_plate_height_z = height_z + bottom_plate_height_z;
-  translate([width_x, -side_plate_width, -bottom_plate_height_z]) {
-    cube([side_plate_width_x, side_plate_depth_y, side_plate_height_z]);
-  }
+  extrusion_width_x = 1;
+
+  difference() {
+    union() {
+      translate([width_x, -side_plate_width, -bottom_plate_height_z]) {
+        cube([side_plate_width_x, side_plate_depth_y, side_plate_height_z]);
+      }
+    }
+    union() {
+      translate([width_x + side_plate_width-extrusion_width_x, 20, 60]) {
+        rotate([90,0,90])
+        linear_extrude(height=extrusion_width_x, convexity=5) {
+          text("SCA", size=11, halign="center", font="Impact");
+        }
+      }
+      translate([width_x + side_plate_width-extrusion_width_x, 20, 20]) {
+        rotate([90,0,90])
+        linear_extrude(height=extrusion_width_x, convexity=5) {
+          text(start_stop, size=11, halign="center", font="Impact");
+        }
+      }
+    }
+  }  
 }
 
 module front_plate() {
@@ -94,8 +121,32 @@ module front_plate() {
   fp_y = depth_y;
   fp_x = 0;
   fp_z = -bottom_plate_height_z;
-  translate([fp_x, fp_y, fp_z]) {
-    cube([width_x, side_plate_width, fp_height_z]);
+  extrusion_width_y = 1;
+  difference() {
+    translate([fp_x, fp_y, fp_z]) {
+     cube([width_x, side_plate_width, fp_height_z]);
+    }
+    translate([green_banana_x+4.25, fp_y + side_plate_width-1, 5]) {
+      rotate([0, 90, 90]) {
+        linear_extrude(height=extrusion_width_y, convexity=5) {
+          text("►", size=6, halign="center", font="Impact");
+        }
+      }
+    }
+    translate([black_banana_x+2.75, fp_y + side_plate_width-1, 5]) {
+      rotate([0, 90, 90]) {
+        linear_extrude(height=extrusion_width_y, convexity=5) {
+          text("►", size=6, halign="center", font="Impact");
+        }
+      }
+    }
+    translate([red_banana_x-0.5, fp_y + side_plate_width-1, 7.75]) {
+      rotate([-90, 0, 0]) {
+        linear_extrude(height=extrusion_width_y, convexity=5) {
+          text("X", size=6, halign="center", font="Fixed:style=Bold");
+        }
+      }
+    }
   }
 }
 
@@ -121,31 +172,35 @@ module back_wall() {
 }
 
 module main_piece() {
-  bottom_plate();
-  side_plate_grooved();
-  front_plate();
-  side_plate_not_grooved();
-  side_wall(0, depth_y);
-  side_wall(width_x - return_wall_width_x, depth_y);
-  back_wall();
+  color("green")  bottom_plate();
+  color("cyan")   side_plate_grooved();
+  color("cyan")   side_plate_not_grooved();
+  color("red")    front_plate();
+  color("yellow") side_wall(0, depth_y);
+  color("yellow") side_wall(width_x - return_wall_width_x, depth_y);
+  color("orange") back_wall();
+}
+
+module straps() {
+  // Four grooves for straps to be passed through.
+  translate([-side_plate_width, -depth_negative_offset_y, strap_1_z]) {
+    cube([side_plate_width, strap_width_y, strap_height_z]);
+  }
+  translate([-side_plate_width, -depth_negative_offset_y, strap_2_z]) {
+    cube([side_plate_width, strap_width_y, strap_height_z]);
+  }
+  translate([width_x, -depth_negative_offset_y, strap_1_z]) {
+    cube([side_plate_width, depth_negative_offset_y, strap_height_z]);
+  }
+  translate([width_x, -depth_negative_offset_y, strap_2_z]) {
+    cube([side_plate_width, strap_width_y, strap_height_z]);
+  }
 }
 
 module part() {
   difference() {
     main_piece();
-    // Four grooves for straps to be passed through.
-    translate([-side_plate_width, -depth_negative_offset_y, 15]) {
-      cube([side_plate_width, depth_negative_offset_y, 22]);
-    }
-    translate([-side_plate_width, -depth_negative_offset_y, 55]) {
-      cube([side_plate_width, depth_negative_offset_y, 22]);
-    }
-    translate([width_x, -depth_negative_offset_y, 15]) {
-      cube([side_plate_width, depth_negative_offset_y, 22]);
-    }
-    translate([width_x, -depth_negative_offset_y, 55]) {
-      cube([side_plate_width, depth_negative_offset_y, 22]);
-    }
+    straps();
   }
 }
 
