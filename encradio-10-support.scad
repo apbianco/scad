@@ -26,8 +26,21 @@
   strap_height_z = 22;
   strap_width_y = depth_negative_offset_y + 1;
 
+  // support|clip|both
+  display = "both";
   start_stop = "Stop";
 
+  // Clip piece
+  pole_diameter_xy = 28;
+  clip_height_z = 20;
+  clip_thickness_xy = 6;
+  clip_angle = 40;
+  termination_offset_x = 2;
+  termination_stretch_y = 1.15;
+  termination_diameter = 4.2;
+
+  staging = false;
+  
   $fn = 200;
 }
 
@@ -204,5 +217,112 @@ module part() {
   }
 }
 
-part();
+if (display == "both") {
+  part();
+  rotate([180, 0, 0]) {
+    translate([width_x/2, 25, -clip_height_z-16]) {
+      clip();
+    }
+  }
+}
+if (display == "support") {
+  part();
+}
+if (display == "clip") {
+  clip();
+}
 
+module clip() {
+  pole_radius_xy = pole_diameter_xy/2;
+  dy = pole_radius_xy * sin(clip_angle);
+  x = pole_radius_xy * cos(clip_angle);
+  difference() {
+    dx = (pole_diameter_xy + clip_thickness_xy)/2;
+    cylinder(d=pole_diameter_xy + clip_thickness_xy, clip_height_z);
+    translate([0, 0,-0.1]) {
+      cylinder(d=pole_diameter_xy, clip_height_z+0.2);
+    }
+    translate([-dx, dy, -0.1]) {
+      cube([pole_diameter_xy + clip_thickness_xy,
+            pole_diameter_xy + clip_thickness_xy-dy, clip_height_z+0.2]);
+    }
+  }
+  translate([x+termination_offset_x,dy,0]) {
+    scale([1, termination_stretch_y]) {
+      cylinder(d=termination_diameter, h=clip_height_z);
+    }
+  }
+  translate([-(x+termination_offset_x),dy,0]) {
+    scale([1, termination_stretch_y]) {
+      cylinder(d=termination_diameter, h=clip_height_z);
+    }
+  }
+  base_length_x = 45;
+  base_width_y = 5;
+  base_width_offset_x = base_length_x / 2;
+  difference() {
+    union() {
+      translate([-base_width_offset_x, -pole_radius_xy - base_width_y, 0]) {
+        cube([base_length_x, base_width_y, clip_height_z]);
+      }
+      translate([-base_width_offset_x, -pole_radius_xy, 0]) {
+        cube([base_length_x, base_width_y, clip_height_z]);
+      }
+    }
+    translate([0, 0,-0.1]) {
+      cylinder(d=pole_diameter_xy, clip_height_z+0.2);
+    }      
+  }
+  
+  // The width of the clip back plate
+  clip_plate_width_y = 1;
+  clip_plate_width_x = 1;
+
+  // Hook dimensions:                 
+  //                                  \
+  //     hook_play_x _.            ____\           __ clip_plate_width_y
+  //                  v  |        |     \____     /
+  //                .-----------+----------   +--
+  //                |----------------------   +--
+  // hook_width ->  |
+  //                `-----
+  //                  ^-------- hook_return
+  //
+  // How far the plate extend past the dimensions of the holder.
+  hook_play_x = 2;
+  hook_return_x = 6;
+  hook_width_y = 1;
+  
+  clip_plate_length_x = width_x + 2*side_plate_width + 2*hook_play_x;
+  clip_plate_offset_y = -pole_radius_xy - base_width_y;
+  clip_plate_offset_x = clip_plate_length_x/2;
+
+  // Clip support plate
+  translate([-clip_plate_offset_x, clip_plate_offset_y]) {
+    cube([clip_plate_length_x, clip_plate_width_y, clip_height_z]);
+  }
+
+  // First/left hook
+  translate([-clip_plate_offset_x - clip_plate_width_x,
+             clip_plate_offset_y - side_plate_width - strap_width_y]) {
+    cube([clip_plate_width_x,
+          side_plate_width + clip_plate_width_y + strap_width_y,
+	  clip_height_z]);
+  }
+  translate([-clip_plate_offset_x - clip_plate_width_x,
+             clip_plate_offset_y - side_plate_width - strap_width_y]) {
+    cube([hook_return_x, hook_width_y, clip_height_z]);    	     
+  }
+
+  // Second/right hook
+  translate([clip_plate_offset_x,
+             clip_plate_offset_y - side_plate_width - strap_width_y]) {
+    cube([clip_plate_width_x,
+          side_plate_width + clip_plate_width_y + strap_width_y,
+	  clip_height_z]);
+  }
+  translate([clip_plate_offset_x - hook_return_x,
+             clip_plate_offset_y - side_plate_width - strap_width_y]) {
+    cube([hook_return_x, hook_width_y, clip_height_z]);    	     
+  }
+}
