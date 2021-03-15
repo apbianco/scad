@@ -25,9 +25,6 @@
   strap_2_z = 55;
   strap_height_z = 22;
   strap_width_y = depth_negative_offset_y + 1;
-
-  // support|clip|both
-  display = "both";
   start_stop = "Stop";
 
   // Clip piece
@@ -39,10 +36,54 @@
   termination_stretch_y = 1.15;
   termination_diameter = 4.2;
 
-  staging = false;
-  
+  // Set display to one of: 
+  // (support|clip|support_and_clip|
+  //  polifemo_clip|support_and_polifemo_clip|
+  //  washer)
+  //
+  // display = "washer";
+  // display = "polifemo_clip";
+  // display = "support_and_polifemo_clip";
+  // display="clip";
+  // display = "support_and_clip";
+  // display = "support";
+  display = "";
+
   $fn = 200;
 }
+
+// Display what you need
+
+if (display == "support_and_clip") {
+  encradio10_holder();
+  rotate([180, 0, 0]) {
+    translate([width_x/2, 25, -clip_height_z-16]) {
+      clip();
+    }
+  }
+}
+if (display == "support") {
+  encradio10_holder();
+}
+if (display == "clip") {
+  clip();
+}
+if (display == "polifemo_clip") {
+  polifemo_clip();
+}
+if (display == "support_and_polifemo_clip") {
+  encradio10_holder();
+  rotate([90, 0, -90]) {
+    translate([38, 106, -width_x + 1]) {
+      polifemo_clip();
+    }
+  }
+}
+if (display == "washer") {
+  washer();
+}
+
+// Holder for the EncRadio10
 
 module bottom_plate() {
   difference() {
@@ -210,27 +251,14 @@ module straps() {
   }
 }
 
-module part() {
+module encradio10_holder() {
   difference() {
     main_piece();
     straps();
   }
 }
 
-if (display == "both") {
-  part();
-  rotate([180, 0, 0]) {
-    translate([width_x/2, 25, -clip_height_z-16]) {
-      clip();
-    }
-  }
-}
-if (display == "support") {
-  part();
-}
-if (display == "clip") {
-  clip();
-}
+// Clip to attach clip the EncRadio10 to a pole of a given diameter
 
 module clip() {
   pole_radius_xy = pole_diameter_xy/2;
@@ -290,7 +318,7 @@ module clip() {
   //
   // How far the plate extend past the dimensions of the holder.
   hook_play_x = 2;
-  hook_return_x = 6;
+  hook_return_x = 6;  // Set to width_x for a closed loop
   hook_width_y = 1;
   
   clip_plate_length_x = width_x + 2*side_plate_width + 2*hook_play_x;
@@ -324,5 +352,107 @@ module clip() {
   translate([clip_plate_offset_x - hook_return_x,
              clip_plate_offset_y - side_plate_width - strap_width_y]) {
     cube([hook_return_x, hook_width_y, clip_height_z]);    	     
+  }
+}
+
+// Clip to attach the EncRadio10 to a Polifemo cell.
+module polifemo_clip() {
+  thickness = 3;
+  inside_diameter = 53 + 4*2;
+  outside_diameter = inside_diameter + 2*thickness;
+  pf_height_z = width_x - 2;
+  
+  right_flank_length_y = 88 - 53/2;
+  right_flank_groove_width_y = 15;
+  right_flank_groove_y = 10;
+  right_flank_groove_pf_height_z = 25;
+  
+  left_flank_length_y = height_z + bottom_plate_height_z + 2*side_plate_width;
+  left_flank_bottom_x = depth_y+3*side_plate_width + depth_negative_offset_y;
+  left_flank_bottom_openning_xy = 5;
+ 
+  // top arc
+  difference() {
+    cylinder(d=outside_diameter, h=pf_height_z);
+    translate([0, 0, -0.1]) {
+      cylinder(d=inside_diameter, h=pf_height_z+0.2);
+    }
+    translate([-outside_diameter, -outside_diameter, -0.1]) {
+      cube([outside_diameter*2, outside_diameter, pf_height_z+0.2]);
+    }
+  }
+
+  // Right side flank
+  difference() {
+    translate([inside_diameter/2, -right_flank_length_y, 0]) {
+      cube([thickness, right_flank_length_y, pf_height_z]);
+    }
+    translate([(inside_diameter/2)-0.1,
+               -right_flank_length_y + right_flank_groove_y,
+	       pf_height_z - right_flank_groove_pf_height_z]) {
+      cube([thickness+0.2, right_flank_groove_width_y,
+            right_flank_groove_pf_height_z + 0.2]);
+    }
+    translate([(inside_diameter/2)-0.1,
+               (-right_flank_length_y + right_flank_groove_y +
+	        right_flank_groove_width_y/2),
+	       pf_height_z - right_flank_groove_pf_height_z]) {
+      rotate([0, 90, 0]) {	       
+        cylinder(d=right_flank_groove_width_y, h=thickness+0.2);
+      }
+    }
+  }
+  
+  // Left side flank
+  translate([-inside_diameter/2 - thickness, -left_flank_length_y, 0]) {
+    cube([thickness, left_flank_length_y, pf_height_z]);
+  }
+  
+  // Bottom plate, with room to let the cables go through
+  difference() {
+    translate([-inside_diameter/2 - thickness - left_flank_bottom_x,
+               -left_flank_length_y-side_plate_width, 0]) {
+      cube([left_flank_bottom_x + thickness, side_plate_width, pf_height_z]);
+    }
+    translate([(-inside_diameter/2 - thickness
+                - left_flank_bottom_x + left_flank_bottom_openning_xy),
+               -left_flank_length_y-side_plate_width,
+	       left_flank_bottom_openning_xy]) {
+      cube([left_flank_bottom_x - 2*left_flank_bottom_openning_xy,
+            side_plate_width, pf_height_z - 2*left_flank_bottom_openning_xy]);
+    }
+  }
+
+  // Bottom plate return
+  translate([
+	-inside_diameter/2 - thickness - left_flank_bottom_x - side_plate_width,
+        -left_flank_length_y-side_plate_width, 0]) {
+    cube([side_plate_width, 10, pf_height_z]);
+  }
+
+  // Left side flank to return
+  translate([
+	-inside_diameter/2 - thickness - 2.5*side_plate_width,
+        (-left_flank_length_y + height_z +
+         bottom_plate_height_z), 0]) {
+    cube([2.5*side_plate_width, side_plate_width, pf_height_z]);
+  }
+  translate([
+	-inside_diameter/2 - thickness - 2.5*side_plate_width,
+        (-left_flank_length_y + height_z +
+         bottom_plate_height_z - 2*side_plate_width), 0]) {
+    cube([side_plate_width, 2*side_plate_width, pf_height_z]);
+  }
+
+}
+
+// Simple washer to secure the holder on the polifemo.
+module washer() {
+  right_flank_groove_width_y = 15;
+  difference() {
+    cylinder(d=right_flank_groove_width_y*2, h=3);
+    translate([0,0,-0.1]) {
+      cylinder(d=right_flank_groove_width_y, h=3.2);
+    }
   }
 }
