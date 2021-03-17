@@ -25,7 +25,7 @@
   strap_2_z = 55;
   strap_height_z = 22;
   strap_width_y = depth_negative_offset_y + 1;
-  start_stop = "Stop";
+  start_stop = "Start";
 
   // Clip piece
   pole_diameter_xy = 28;
@@ -449,10 +449,11 @@ module polifemo_clip() {
 // Simple washer to secure the holder on the polifemo.
 module washer() {
   right_flank_groove_width_y = 15;
+  height = 3.5;
   difference() {
-    cylinder(d=right_flank_groove_width_y*2, h=3);
+    cylinder(d=right_flank_groove_width_y*2, h=height);
     translate([0,0,-0.1]) {
-      cylinder(d=right_flank_groove_width_y, h=3.2);
+      cylinder(d=right_flank_groove_width_y, h=height+0.2);
     }
   }
 }
