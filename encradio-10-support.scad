@@ -1,3 +1,5 @@
+use <fake-clip-plane.scad>
+
 { // Part parameters
   // - Overall dimensions
   height_z = 100;
@@ -371,7 +373,7 @@ module polifemo_clip() {
   left_flank_bottom_x = depth_y+3*side_plate_width + depth_negative_offset_y;
   left_flank_bottom_openning_xy = 5;
  
-  // top arc
+  // Top arc
   difference() {
     cylinder(d=outside_diameter, h=pf_height_z);
     translate([0, 0, -0.1]) {
@@ -382,6 +384,29 @@ module polifemo_clip() {
     }
   }
 
+  // Top cover with holes for the banana jacks
+  translate([0, 0, pf_height_z - thickness]) {
+    difference() {
+      cylinder(d=outside_diameter, h=thickness);
+      translate([-outside_diameter, -outside_diameter, -0.1]) {
+        cube([outside_diameter*2, outside_diameter, thickness+0.2]);
+      }
+    }
+  }
+  
+  // Visor
+  translate([0, 0, pf_height_z]) {
+    difference() {
+      union() {
+        difference() {
+          cylinder(d=outside_diameter, h=50);
+          cylinder(d=inside_diameter, h=50);
+        }
+      }
+     FakeClipPlane([0,-1,1],0,120);
+    }
+  }
+  
   // Right side flank
   difference() {
     translate([inside_diameter/2, -right_flank_length_y, 0]) {
@@ -416,10 +441,11 @@ module polifemo_clip() {
     }
     translate([(-inside_diameter/2 - thickness
                 - left_flank_bottom_x + left_flank_bottom_openning_xy),
-               -left_flank_length_y-side_plate_width,
+               -left_flank_length_y-side_plate_width - 0.1,
 	       left_flank_bottom_openning_xy]) {
       cube([left_flank_bottom_x - 2*left_flank_bottom_openning_xy,
-            side_plate_width, pf_height_z - 2*left_flank_bottom_openning_xy]);
+            side_plate_width + 0.2,
+            pf_height_z - 2*left_flank_bottom_openning_xy]);
     }
   }
 
