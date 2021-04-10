@@ -44,12 +44,12 @@ use <fake-clip-plane.scad>
   //  washer)
   //
   // display = "washer";
-  // display = "polifemo_clip";
+  display = "polifemo_clip";
   // display = "support_and_polifemo_clip";
   // display="clip";
   // display = "support_and_clip";
   // display = "support";
-  display = "";
+  // display = "";
 
   $fn = 200;
 }
@@ -390,6 +390,14 @@ module polifemo_clip() {
       cylinder(d=outside_diameter, h=thickness);
       translate([-outside_diameter, -outside_diameter, -0.1]) {
         cube([outside_diameter*2, outside_diameter, thickness+0.2]);
+      }
+      mirror([1,0,0]) {
+        translate([4, 18, -0.1]) {
+          cylinder(d=banana_diameter, h=thickness+0.2);
+        }
+        translate([14, 8.5, -0.1]) {
+          cylinder(d=banana_diameter, h=thickness+0.2);
+        }
       }
     }
   }
