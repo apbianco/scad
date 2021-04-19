@@ -2,6 +2,9 @@
 // Allows one to solder pins and then your board-mount socket is ready
 // to be used on a breadboard.
 //
+// The side where the sleeve pin exits is labeled G (Gnd) and the side
+// where the tip pin exits is labeled T (Tip).
+//
 // I print without support for the letters to appear nicely.
 
 { // Part dimensions
