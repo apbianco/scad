@@ -1,20 +1,25 @@
 // Socket for the 3.5mm jack, err, socket - RS part #106-874.
 // Allows one to solder pins and then your board-mount socket is ready
 // to be used on a breadboard.
+//
+// I print without support for the letters to appear nicely.
 
-{ // Part dimension
+{ // Part dimensions
   connector_width = 2.5;
-  connector_heigth = 5;
+  connector_height = 5;
   connector_thickness = 1;
   pin_hole_diameter = 1.5;
   
   size_x = 9.25;
-  size1_y = 10.5 + 0.25;  // 0.25 is an adjustment for retraction.
-  size2_y = size1_y + connector_heigth;
+  // 0.25 is an adjustment that I've found necessary for the part to
+  // slip in and enjoy a snug fit... Maybe it's just my printer.
+  size1_y = 10.5 + 0.25;
+  size2_y = size1_y + connector_height;
   size1_z = 7.75;
-  size2_z = connector_heigth;
+  size2_z = connector_height;
   size3_z = 4;  // pin height
 
+  // Wall thickness
   thickness = 1;
 
   $fn = 100;
@@ -45,7 +50,7 @@ module base() {
 module top() {
   difference() {
     cube([size_x+2*thickness, size2_y+2*thickness, size1_z]);
-    translate([thickness, thickness + connector_heigth, 0]) {
+    translate([thickness, thickness + connector_height, 0]) {
       cube([size_x, size1_y, size1_z]);
     }
   }
@@ -75,10 +80,10 @@ module front_pin_hole() {
 }
 
 module part() {
+  front_pin_hole_x = (size_x+2*thickness)/2;
+  front_pin_hole_y = thickness + connector_width/3;
   difference() {
     main_volume();
-    front_pin_hole_x = (size_x+2*thickness)/2;
-    front_pin_hole_y = thickness + connector_width/3;
     translate([front_pin_hole_x, front_pin_hole_y, 0]) {
       front_pin_hole();	     
     }
@@ -86,6 +91,13 @@ module part() {
       rotate([90, 0, 0]) {
         linear_extrude(height=3, convexity=5) {
           text("G", size=5, halign="center", font="Impact");
+        }
+      }
+    }
+    translate([size_x-thickness, size2_y+4, 1]) {
+      rotate([90, 0, 0]) {
+        linear_extrude(height=3, convexity=5) {
+          text("T", size=5, halign="center", font="Impact");
         }
       }
     }
