@@ -1,3 +1,7 @@
+// Socket for the 3.5mm jack, err, socket - RS part #106-874.
+// Allows one to solder pins and then your board-mount socket is ready
+// to be used on a breadboard.
+
 { // Part dimension
   connector_width = 2.5;
   connector_heigth = 5;
