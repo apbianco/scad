@@ -2,7 +2,7 @@
   connector_width = 2.5;
   connector_heigth = 5;
   connector_thickness = 1;
-  front_pin_hole_diameter = 1.6;
+  pin_hole_diameter = 1.5;
   
   size_x = 9.25;
   size1_y = 10.5 + 0.25;  // 0.25 is an adjustment for retraction.
@@ -21,10 +21,19 @@ module base() {
   max_x = size_x+2*thickness;
   difference() {
     cube([max_x, max_y, size3_z + size2_z]);
-    // vertical groove for the back connector
+    // vertical well for the back connector, in two parts:
+    //   - The first part is wider so that the connector and its
+    //     soldered pin can be inserted
+    //   - The second part is just a circular well for the wire to
+    //     go through
+    solder_blob = 2.25;
     translate([max_x/2 - connector_width/2,
-               max_y - thickness - connector_thickness - 0.5]) {
-      cube([connector_width, connector_thickness, size3_z + size2_z]);
+               max_y - thickness - solder_blob, size2_z]) {
+      cube([connector_width, solder_blob, size3_z]);
+    }
+    translate([max_x/2,
+               max_y - thickness - pin_hole_diameter/2]) {
+      cylinder(d=pin_hole_diameter, h=size3_z+1);	        
     }
   }
 }
@@ -56,23 +65,27 @@ module front_pin_hole() {
   angle = atan(opposite / adjacent);
   translate([opposite, 0, -0.2]) {
     rotate([0, -angle, 0]) {
-      cylinder(d=front_pin_hole_diameter, h=adjacent+1);
+      cylinder(d=pin_hole_diameter, h=adjacent+1);
     }
   }
 }
 
-difference() {
-  main_volume();
-  front_pin_hole_x = (size_x+2*thickness)/2;
-  front_pin_hole_y = thickness + connector_width/3;
-  translate([front_pin_hole_x, front_pin_hole_y, 0]) {
-    front_pin_hole();	     
-  }
-  translate([front_pin_hole_x/2, 1, 1]) {
-    rotate([90, 0, 0]) {
-      linear_extrude(height=3, convexity=5) {
-        text("G", size=5, halign="center", font="Impact");
+module part() {
+  difference() {
+    main_volume();
+    front_pin_hole_x = (size_x+2*thickness)/2;
+    front_pin_hole_y = thickness + connector_width/3;
+    translate([front_pin_hole_x, front_pin_hole_y, 0]) {
+      front_pin_hole();	     
+    }
+    translate([front_pin_hole_x/2, 1, 1]) {
+      rotate([90, 0, 0]) {
+        linear_extrude(height=3, convexity=5) {
+          text("G", size=5, halign="center", font="Impact");
+        }
       }
     }
   }
 }
+
+part();
