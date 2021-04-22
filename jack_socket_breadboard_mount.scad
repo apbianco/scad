@@ -11,7 +11,7 @@
   connector_width = 2.5;
   connector_height = 5;
   connector_thickness = 1;
-  pin_hole_diameter = 1.5;
+  pin_hole_diameter = 1.35;
   
   size_x = 9.25;
   // 0.25 is an adjustment that I've found necessary for the part to
@@ -93,7 +93,7 @@ module part() {
     translate([front_pin_hole_x/2, 1, 1]) {
       rotate([90, 0, 0]) {
         linear_extrude(height=3, convexity=5) {
-          text("G", size=5, halign="center", font="Impact");
+          text("S", size=5, halign="center", font="Impact");
         }
       }
     }
