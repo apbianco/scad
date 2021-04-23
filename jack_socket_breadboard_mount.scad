@@ -11,7 +11,7 @@
   connector_width = 2.5;
   connector_height = 5;
   connector_thickness = 1;
-  pin_hole_diameter = 1.35;
+  pin_hole_diameter = 1.15;
   
   size_x = 9.25;
   // 0.25 is an adjustment that I've found necessary for the part to
