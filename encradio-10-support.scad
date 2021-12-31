@@ -32,7 +32,7 @@ use <fake-clip-plane.scad>
   // Clip piece
   pole_diameter_xy = 28;
   clip_height_z = 20;
-  clip_thickness_xy = 6;
+  clip_thickness_xy = 7.5;
   clip_angle = 40;
   termination_offset_x = 2;
   termination_stretch_y = 1.15;
@@ -44,9 +44,9 @@ use <fake-clip-plane.scad>
   //  washer)
   //
   // display = "washer";
-  display = "polifemo_clip";
+  // display = "polifemo_clip";
   // display = "support_and_polifemo_clip";
-  // display="clip";
+  display="clip";
   // display = "support_and_clip";
   // display = "support";
   // display = "";
