@@ -1,5 +1,5 @@
 // Protection plate for the Racetime2. Prevents one from accidentally
-// turning the device off by making the on/off switch is inaccessible.
+// turning the device off by making the on/off switch inaccessible.
 //
 // Print logs:
 // - 1/7: Eyone black, default 205C, part OK
