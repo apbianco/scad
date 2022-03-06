@@ -3,7 +3,7 @@
 total_d = 35;
 
 // Number of wings
-wing_count = 4; //[1:16]
+wing_count = 3; //[1:16]
 
 // Wing diameter on the outside
 wing_thick_d = 10;
@@ -41,6 +41,7 @@ roundness=2.45;
 
 $fs=0.3+0;
 tol= 0.05+0;
+$fn=50;
 
 module torus(r,rnd)
 {
@@ -64,10 +65,10 @@ module one_wing()
 {
 	hull()
 	{
-		translate([total_d/2 - wing_thick_d/2, 0, 0])
-			rcyl(r= wing_thick_d/2, h= wing_h, rnd= roundness);
-		translate([nut_d/2+nut_shoulder_x-roundness, 0, 0])
-			rcyl(r= wing_thin_d/2, h= nut_shoulder_z+nut_th, rnd= roundness);
+		translate([total_d/2 - wing_thick_d/2, 0, 16])
+		  rcyl(r= wing_thick_d/2, h= wing_h, rnd= roundness);
+		translate([nut_d/2+nut_shoulder_x-roundness, 0, 10])
+	    rcyl(r= wing_thin_d/2, h= nut_shoulder_z+nut_th-10, rnd= roundness);
 	}
 }
 
