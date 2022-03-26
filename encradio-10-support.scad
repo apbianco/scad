@@ -46,9 +46,9 @@ use <fake-clip-plane.scad>
   // display = "washer";
   // display = "polifemo_clip";
   // display = "support_and_polifemo_clip";
-  display="clip";
+  // display="clip";
   // display = "support_and_clip";
-  // display = "support";
+  display = "support";
   // display = "";
 
   $fn = 200;
@@ -68,7 +68,7 @@ if (display == "support") {
   encradio10_holder();
 }
 if (display == "clip") {
-  clip();
+  clip(true);
 }
 if (display == "polifemo_clip") {
   polifemo_clip();
@@ -262,7 +262,7 @@ module encradio10_holder() {
 
 // Clip to attach clip the EncRadio10 to a pole of a given diameter
 
-module clip() {
+module clip(closed_loop) {
   pole_radius_xy = pole_diameter_xy/2;
   dy = pole_radius_xy * sin(clip_angle);
   x = pole_radius_xy * cos(clip_angle);
@@ -320,7 +320,8 @@ module clip() {
   //
   // How far the plate extend past the dimensions of the holder.
   hook_play_x = 2;
-  hook_return_x = 6;  // Set to width_x for a closed loop
+  strap_width_y = strap_width_y + (closed_loop ? 2 : 0);
+  hook_return_x = (closed_loop ? width_x : 6);
   hook_width_y = 1;
   
   clip_plate_length_x = width_x + 2*side_plate_width + 2*hook_play_x;
