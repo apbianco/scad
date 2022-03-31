@@ -48,7 +48,8 @@ use <fake-clip-plane.scad>
   // display = "support_and_polifemo_clip";
   // display="clip";
   // display = "support_and_clip";
-  display = "support";
+  // display = "support";
+  display = "racetime_holder";
   // display = "";
 
   $fn = 200;
@@ -60,15 +61,21 @@ if (display == "support_and_clip") {
   encradio10_holder();
   rotate([180, 0, 0]) {
     translate([width_x/2, 25, -clip_height_z-16]) {
-      clip();
+      encoder10_antenna_clip(false);
     }
   }
 }
 if (display == "support") {
   encradio10_holder();
 }
+if (display == "racetime_holder") {
+  // what = "box_and_clip";
+  what = "clip";
+  // what = "box";
+  racetime_holder(what);
+}
 if (display == "clip") {
-  clip(true);
+  encoder10_antenna_clip(true);
 }
 if (display == "polifemo_clip") {
   polifemo_clip();
@@ -157,10 +164,11 @@ module side_plate_not_grooved() {
     }
     union() {
       translate([width_x + side_plate_width-extrusion_width_x, 20, 60]) {
-        rotate([90,0,90])
-        linear_extrude(height=extrusion_width_x, convexity=5) {
-          text("SCA", size=11, halign="center", font="Impact");
-        }
+        rotate([90,0,90]) {
+          linear_extrude(height=extrusion_width_x, convexity=5) {
+            text("SCA", size=11, halign="center", font="Impact");
+          }
+	}
       }
       translate([width_x + side_plate_width-extrusion_width_x, 20, 20]) {
         rotate([90,0,90])
@@ -260,9 +268,88 @@ module encradio10_holder() {
   }
 }
 
-// Clip to attach clip the EncRadio10 to a pole of a given diameter
+// A holder for the entire racetime
 
-module clip(closed_loop) {
+module main_racetime_holder_piece(length_x, length_y, length_z,
+                                  bottom_offset, wall_width, bottom_plate_width) {
+  difference() {
+    cube([length_x+2*wall_width, length_y+2*wall_width, bottom_offset]);
+    translate([bottom_plate_width+wall_width, bottom_plate_width+wall_width, 0]) {
+      cube([length_x - 2 * bottom_plate_width,
+            length_y - 2 * (bottom_plate_width - 3),
+            bottom_offset]);
+    }
+  }
+  cube([wall_width, length_y + 2*wall_width, length_z]);
+
+  difference() {
+    translate([length_x + wall_width, 0, 0]) {
+      cube([wall_width, length_y + 2*wall_width, length_z]);
+    }
+    translate([length_x+ 1.5*wall_width, 3+length_y/2, 10]) {
+      rotate([90,0,90])
+      linear_extrude(height=3, convexity=5) {
+        text("SCA", size=20, halign="center", font="Impact");
+      }
+    }
+  }
+  cube([wall_width, length_y, length_z]);
+  cube([length_x + 2*wall_width, wall_width, length_z]);
+  translate([0, length_y + wall_width, 0]) {
+    difference() {
+      cube([length_x + 2*wall_width, wall_width, length_z]);
+      translate([10-wall_width, 0, 10]) {
+        cube([length_x - 3*wall_width, wall_width, length_z-20]);
+      }
+    }
+  }
+}
+
+module racetime_holder_straps(length_x, length_z, wall_width) {
+  translate([0, wall_width, length_z - strap_height_z - 5]) {
+    cube([wall_width, strap_width_y, strap_height_z]);
+  }
+  translate([length_x + wall_width, wall_width, length_z - strap_height_z - 5]) {
+    cube([wall_width, strap_width_y, strap_height_z]);
+  }
+}
+
+module racetime_holder(what) {
+  // Next 3 dimensions are the ones of the racetime2
+  // Do not include the wall sizes
+  length_x = 95;
+  length_y = 48;
+  length_z = 75;
+  // Thickness of the holder's walls
+  wall_width = 3;
+
+  // Bottom plate measures
+  bottom_plate_thickness = 3;
+  bottom_plate_recess = 13;
+
+  if (search(what, "box")) {
+    translate([-(length_x + 2*wall_width)/2, 0, 0]) {
+      difference() {
+        main_racetime_holder_piece(length_x, length_y, length_z,
+                                   bottom_plate_thickness, wall_width,
+				   bottom_plate_recess);
+        racetime_holder_straps(length_x, length_z, wall_width);
+      }
+    }
+  }
+  if (search(what, "clip")) {
+    translate([0, -35, clip_height_z]) {
+      rotate([180, 0, 0]) {
+        clip(length_x, 2, false);
+      }
+    }
+  }
+}
+
+// Clip to attach clip the EncRadio10 or the racetime2 to a pole of a
+// given diameter
+
+module clip(clip_width, clip_plate_width, closed_loop) {
   pole_radius_xy = pole_diameter_xy/2;
   dy = pole_radius_xy * sin(clip_angle);
   x = pole_radius_xy * cos(clip_angle);
@@ -305,8 +392,8 @@ module clip(closed_loop) {
   }
   
   // The width of the clip back plate
-  clip_plate_width_y = 1;
-  clip_plate_width_x = 1;
+  clip_plate_width_y = clip_plate_width;
+  clip_plate_width_x = clip_plate_width;
 
   // Hook dimensions:                 
   //                                  \
@@ -321,10 +408,10 @@ module clip(closed_loop) {
   // How far the plate extend past the dimensions of the holder.
   hook_play_x = 2;
   strap_width_y = strap_width_y + (closed_loop ? 2 : 0);
-  hook_return_x = (closed_loop ? width_x : 6);
+  hook_return_x = (closed_loop ? clip_width : 6);
   hook_width_y = 1;
   
-  clip_plate_length_x = width_x + 2*side_plate_width + 2*hook_play_x;
+  clip_plate_length_x = clip_width + 2*side_plate_width + 2*hook_play_x;
   clip_plate_offset_y = -pole_radius_xy - base_width_y;
   clip_plate_offset_x = clip_plate_length_x/2;
 
@@ -356,6 +443,10 @@ module clip(closed_loop) {
              clip_plate_offset_y - side_plate_width - strap_width_y]) {
     cube([hook_return_x, hook_width_y, clip_height_z]);    	     
   }
+}
+
+module encoder10_antenna_clip(closed_loop) {
+  clip(width_x, 1, false);
 }
 
 // Clip to attach the EncRadio10 to a Polifemo cell.
